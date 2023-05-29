@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import Character from "./Character";
+import { connect } from "react-redux";
 
 class Simpsons extends Component {
   render() {
+    console.log(this.props, "simpsons");
     const { simpsons, onLikeToggle, onDelete } = this.props;
 
     return (
@@ -10,7 +12,6 @@ class Simpsons extends Component {
         {simpsons.map((item) => {
           return (
             <Character
-              setLikedCount={this.props.setLikedCount}
               onLikeToggle={onLikeToggle}
               onDelete={onDelete}
               item={item}
@@ -24,4 +25,11 @@ class Simpsons extends Component {
   }
 }
 
-export default Simpsons;
+function mapStateToProps(state) {
+  console.log(state, "simpsonssub");
+  return {
+    simpsons: state.simpsons,
+  };
+}
+
+export default connect(mapStateToProps)(Simpsons);

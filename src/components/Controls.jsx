@@ -1,30 +1,47 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 class Controls extends Component {
+  onSort = (e) => {
+    this.props.dispatch({ type: "ONSORT", event: e });
+  };
+  onReset = () => {
+    this.props.dispatch({ type: "RESET" });
+  };
+  onSearch = (e) => {
+    this.props.dispatch({ type: "ONSEARCH", event: e });
+  };
+
   render() {
-    const {
-      onSearchInput,
-      onSort,
-      onReset,
-      sortDirection,
-      sortBy,
-      searchInput,
-    } = this.props;
+    const { onSearchInput, onSort, sortDirection, sortBy, searchInput } =
+      this.props;
     return (
       <div id="controls-input">
-        <input value={searchInput} onChange={onSearchInput}></input>
-        <select value={sortDirection} onChange={onSort} id="sort-direction">
+        <input value={searchInput} onChange={this.onSearch}></input>
+        <select
+          value={sortDirection}
+          onChange={this.onSort}
+          id="sort-direction"
+        >
           <option value="asc">Asc</option>
           <option value="desc">Desc</option>
         </select>
-        <select value={sortBy} onChange={onSort} id="sort-by">
+        <select value={sortBy} onChange={this.onSort} id="sort-by">
           <option value="quote">Quote</option>
           <option value="character">Character name</option>
         </select>
-        <button onClick={onReset}>Reset</button>
+        <button onClick={this.onReset}>Reset</button>
       </div>
     );
   }
 }
 
-export default Controls;
+function mapStateToProps(state) {
+  return {
+    sortDirection: state.sortDirection,
+    sortBy: state.sortBy,
+    searchInput: state.searchInput,
+  };
+}
+
+export default connect(mapStateToProps)(Controls);

@@ -3,6 +3,8 @@ import Name from "./Name";
 import Quote from "./Quote";
 import Image from "./Image";
 import Delete from "./Delete";
+import { connect } from "react-redux";
+import Loading from "./Loading";
 
 class Character extends Component {
   render() {
@@ -29,4 +31,14 @@ class Character extends Component {
   }
 }
 
-export default Character;
+function mapStateToProps(state) {
+  return {
+    sortDirection: state.sortDirection,
+    sortBy: state.sortBy,
+    searchInput: state.searchInput,
+    test: state.test,
+    simpsons: state.simpsons,
+  };
+}
+
+export default connect(mapStateToProps)(Character);

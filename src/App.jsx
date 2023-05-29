@@ -4,44 +4,10 @@ import Loading from "./components/Loading";
 import Simpsons from "./components/Simpsons";
 import Controls from "./components/Controls";
 import "./App.css";
+import { connect } from "react-redux";
 
 class App extends Component {
-  state = { sortDirection: "asc", sortBy: "quote", searchInput: "" };
-
-  onLikeToggle = (id) => {
-    const indexOf = this.state.simpsons.findIndex((char) => {
-      return char.id === id;
-    });
-    const simpsons = [...this.state.simpsons];
-    simpsons[indexOf].liked = !simpsons[indexOf].liked;
-    this.setState({ simpsons });
-  };
-
-  onDelete = (id) => {
-    const indexOf = this.state.simpsons.findIndex((char) => {
-      return char.id === id;
-    });
-    const simpsons = [...this.state.simpsons];
-    simpsons.splice(indexOf, 1);
-    this.setState({ simpsons });
-  };
-
-  onSearchInput = (e) => {
-    this.setState({ searchInput: e.target.value });
-  };
-
-  onReset = (e) => {
-    this.setState({ sortDirection: "asc", sortBy: "quote", searchInput: "" });
-  };
-
-  onSort = (e) => {
-    if (e.target.id === "sort-by") {
-      this.setState({ sortBy: e.target.value });
-    } else {
-      this.setState({ sortDirection: e.target.value });
-    }
-    console.log(e);
-  };
+  state = { searchInput: "" };
 
   async componentDidMount() {
     try {
@@ -51,14 +17,20 @@ class App extends Component {
       data.forEach((element, index) => {
         element.id = Math.random();
       });
-      this.setState({ simpsons: data });
+      this.props.dispatch({ type: "SET-DATA", data });
+
+      console.log(this.props);
+
+      // this.setState({ simpsons: data });
     } catch (e) {
       console.log(e);
     }
   }
 
   render() {
-    const { simpsons, searchInput, sortDirection, sortBy } = this.state;
+    const { simpsons } = this.props;
+
+    const { searchInput, sortDirection, sortBy } = this.state;
     if (!simpsons) return <Loading />;
     let simpsonsResults = simpsons;
 
@@ -71,22 +43,21 @@ class App extends Component {
           return item;
       });
     }
-    if (sortDirection === "asc") {
+    if (this.props.sortDirection === "asc") {
       simpsonsResults.sort((a, b) => {
-        console.log(a);
-        if (a[sortBy] < b[sortBy]) {
+        if (a[this.props.sortBy] < b[this.props.sortBy]) {
           return -1;
         }
-        if (a[sortBy] > b[sortBy]) {
+        if (a[this.props.sortBy] > b[this.props.sortBy]) {
           return 1;
         }
       });
-    } else if (sortDirection === "desc") {
+    } else if (this.props.sortDirection === "desc") {
       simpsonsResults.sort((a, b) => {
-        if (a[sortBy] < b[sortBy]) {
+        if (a[this.props.sortBy] < b[this.props.sortBy]) {
           return 1;
         }
-        if (a[sortBy] > b[sortBy]) {
+        if (a[this.props.sortBy] > b[this.props.sortBy]) {
           return -1;
         }
       });
@@ -109,14 +80,20 @@ class App extends Component {
           sortBy={sortBy}
           searchInput={searchInput}
         />
-        <Simpsons
-          onDelete={this.onDelete}
-          simpsons={simpsonsResults}
-          onLikeToggle={this.onLikeToggle}
-        />
+        <Simpsons onDelete={this.onDelete} onLikeToggle={this.onLikeToggle} />
       </>
     );
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    sortDirection: state.sortDirection,
+    sortBy: state.sortBy,
+    searchInput: state.searchInput,
+    test: state.test,
+    simpsons: state.simpsons,
+  };
+}
+
+export default connect(mapStateToProps)(App);

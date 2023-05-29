@@ -1,12 +1,18 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 class Name extends Component {
+  onLikeToggle = (id) => {
+    this.props.dispatch({ type: "LIKE-TOGGLE", id: id });
+  };
+
   render() {
-    const { liked, character, onLikeToggle } = this.props;
+    const { liked, character } = this.props;
+    console.log(this.props);
     return (
       <div>
         <h1>{character}</h1>
-        <button onClick={() => onLikeToggle(this.props.id)}>
+        <button onClick={() => this.onLikeToggle(this.props.id)}>
           {liked ? "Liked" : "Not liked"}
         </button>
       </div>
@@ -14,4 +20,4 @@ class Name extends Component {
   }
 }
 
-export default Name;
+export default connect()(Name);
