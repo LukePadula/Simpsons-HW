@@ -1,54 +1,61 @@
 import { initialState } from "./initialState";
+import {
+  SETDATA,
+  LIKETOGGLE,
+  ONSORT,
+  ONSEARCH,
+  RESET,
+  ONDELETE,
+} from "./types";
 
 export function reducer(state = initialState, action) {
   switch (action.type) {
-    case "SET-DATA":
+    case SETDATA:
       const stateCopy = { ...state };
       stateCopy.simpsons = action.data;
-      console.log("DAta set");
       return stateCopy;
 
-    case "LIKE-TOGGLE": {
-      const stateCopy = { ...state };
-      const indexOf = stateCopy.simpsons.findIndex((char) => {
+    case LIKETOGGLE: {
+      const simpsons = [...state.simpsons];
+      const indexOf = simpsons.findIndex((char) => {
         return char.id === action.id;
       });
-      stateCopy.simpsons[indexOf].liked = !stateCopy.simpsons[indexOf].liked;
+      simpsons[indexOf].liked = !simpsons[indexOf].liked;
+
+      return { ...state, simpsons };
+    }
+    case ONSORT: {
+      const stateCopy = { ...state };
+      stateCopy[action.event.target.id] = action.event.target.value;
+      stateCopy.resetDisabled = false;
 
       return stateCopy;
     }
-    case "ONSORT": {
-      const stateCopy = { ...state };
-      if (action.event.target.id === "sort-by") {
-        stateCopy.sortBy = action.event.target.value;
-      } else if (action.event.target.id === "sort-direction") {
-        stateCopy.sortDirection = action.event.target.value;
-      }
+    case ONSEARCH: {
+      let { searchInput, resetDisabled } = state;
+      searchInput = action.value;
+      resetDisabled = false;
 
-      return stateCopy;
-    }
-    case "ONSEARCH": {
-      const stateCopy = { ...state };
-      stateCopy.searchInput = action.event.target.value;
-
-      return stateCopy;
+      return { ...state, searchInput, resetDisabled };
     }
 
-    case "RESET": {
-      const stateCopy = { ...state };
-      stateCopy.sortDirection = initialState.sortDirection;
-      stateCopy.sortBy = initialState.sortBy;
-      stateCopy.searchInput = initialState.searchInput;
+    case RESET: {
+      let { sortDirection, sortBy, searchInput, resetDisabled } = state;
+      sortDirection = initialState.sortDirection;
+      sortBy = initialState.sortBy;
+      searchInput = initialState.searchInput;
+      resetDisabled = true;
 
-      return stateCopy;
+      return { ...state, sortDirection, sortBy, searchInput, resetDisabled };
     }
-    case "DELETE": {
-      const stateCopy = { ...state };
-      stateCopy.sortDirection = initialState.sortDirection;
-      stateCopy.sortBy = initialState.sortBy;
-      stateCopy.searchInput = "";
+    case ONDELETE: {
+      const simpsons = [...state.simpsons];
+      const indexOf = simpsons.findIndex((char) => {
+        return char.id === action.id;
+      });
+      simpsons.splice(indexOf, 1);
 
-      return stateCopy;
+      return { ...state, simpsons };
     }
 
     default:

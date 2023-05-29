@@ -5,23 +5,18 @@ import Simpsons from "./components/Simpsons";
 import Controls from "./components/Controls";
 import "./App.css";
 import { connect } from "react-redux";
+import { SETDATA } from "./store/types";
 
 class App extends Component {
-  state = { searchInput: "" };
-
   async componentDidMount() {
     try {
       const { data } = await axios.get(
         `https://thesimpsonsquoteapi.glitch.me/quotes?count=20`
       );
       data.forEach((element, index) => {
-        element.id = Math.random();
+        element.id = index + Math.random();
       });
-      this.props.dispatch({ type: "SET-DATA", data });
-
-      console.log(this.props);
-
-      // this.setState({ simpsons: data });
+      this.props.dispatch({ type: SETDATA, data });
     } catch (e) {
       console.log(e);
     }
@@ -29,40 +24,7 @@ class App extends Component {
 
   render() {
     const { simpsons } = this.props;
-
-    const { searchInput, sortDirection, sortBy } = this.state;
     if (!simpsons) return <Loading />;
-    let simpsonsResults = simpsons;
-
-    if (searchInput) {
-      simpsonsResults = simpsons.filter((item) => {
-        if (
-          item.quote.toLowerCase().includes(searchInput.toLowerCase()) ||
-          item.character.toLowerCase().includes(searchInput.toLowerCase())
-        )
-          return item;
-      });
-    }
-    if (this.props.sortDirection === "asc") {
-      simpsonsResults.sort((a, b) => {
-        if (a[this.props.sortBy] < b[this.props.sortBy]) {
-          return -1;
-        }
-        if (a[this.props.sortBy] > b[this.props.sortBy]) {
-          return 1;
-        }
-      });
-    } else if (this.props.sortDirection === "desc") {
-      simpsonsResults.sort((a, b) => {
-        if (a[this.props.sortBy] < b[this.props.sortBy]) {
-          return 1;
-        }
-        if (a[this.props.sortBy] > b[this.props.sortBy]) {
-          return -1;
-        }
-      });
-    }
-
     let likeTotal = 0;
 
     simpsons.forEach((character) => {
@@ -72,15 +34,8 @@ class App extends Component {
     return (
       <>
         <h1>Total no of liked chars {likeTotal}</h1>
-        <Controls
-          onReset={this.onReset}
-          onSort={this.onSort}
-          onSearchInput={this.onSearchInput}
-          sortDirection={sortDirection}
-          sortBy={sortBy}
-          searchInput={searchInput}
-        />
-        <Simpsons onDelete={this.onDelete} onLikeToggle={this.onLikeToggle} />
+        <Controls />
+        <Simpsons />
       </>
     );
   }
@@ -88,10 +43,6 @@ class App extends Component {
 
 function mapStateToProps(state) {
   return {
-    sortDirection: state.sortDirection,
-    sortBy: state.sortBy,
-    searchInput: state.searchInput,
-    test: state.test,
     simpsons: state.simpsons,
   };
 }

@@ -1,21 +1,54 @@
 import React, { Component } from "react";
 import Character from "./Character";
 import { connect } from "react-redux";
+import Loading from "./Loading";
 
 class Simpsons extends Component {
   render() {
-    console.log(this.props, "simpsons");
-    const { simpsons, onLikeToggle, onDelete } = this.props;
+    const {
+      simpsons,
+      onLikeToggle,
+      onDelete,
+      sortBy,
+      sortDirection,
+      searchInput,
+    } = this.props;
+
+    let simpsonsFinal;
+
+    if (searchInput) {
+      simpsonsFinal = simpsons.filter((item) => {
+        if (
+          item.quote.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.character.toLowerCase().includes(searchInput.toLowerCase())
+        )
+          return item;
+      });
+    } else {
+      simpsonsFinal = simpsons;
+    }
+
+    simpsonsFinal.sort((a, b) => {
+      if (a[sortBy] < b[sortBy]) {
+        return -1;
+      }
+      if (a[sortBy] > b[sortBy]) {
+        return 1;
+      }
+    });
+    if (sortDirection === "desc") {
+      simpsonsFinal.reverse();
+    }
 
     return (
       <>
-        {simpsons.map((item) => {
+        {simpsonsFinal.map((item, index) => {
           return (
             <Character
               onLikeToggle={onLikeToggle}
               onDelete={onDelete}
               item={item}
-              key={item.quote + item.character}
+              key={index + item.quote + item.character}
               id={item.id}
             />
           );
@@ -26,9 +59,11 @@ class Simpsons extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log(state, "simpsonssub");
   return {
     simpsons: state.simpsons,
+    sortDirection: state.sortDirection,
+    sortBy: state.sortBy,
+    searchInput: state.searchInput,
   };
 }
 

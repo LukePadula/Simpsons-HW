@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { LIKETOGGLE } from "../store/types";
 
 class Name extends Component {
   onLikeToggle = (id) => {
-    this.props.dispatch({ type: "LIKE-TOGGLE", id: id });
+    this.props.dispatch({ type: LIKETOGGLE, id: id });
   };
 
   render() {
     const { liked, character } = this.props;
-    console.log(this.props);
     return (
       <div>
         <h1>{character}</h1>

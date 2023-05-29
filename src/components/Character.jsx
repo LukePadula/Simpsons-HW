@@ -4,7 +4,6 @@ import Quote from "./Quote";
 import Image from "./Image";
 import Delete from "./Delete";
 import { connect } from "react-redux";
-import Loading from "./Loading";
 
 class Character extends Component {
   render() {
